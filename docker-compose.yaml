@@ -1,0 +1,58 @@
+services:
+  pg_data_wh:
+    container_name: pg_data_wh
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-traffic_analyzer_db}
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me}
+    ports:
+      - "${POSTGRES_PORT:-5488}:5432"
+    volumes:
+      - ./services/pg_data_wh:/var/lib/postgresql/data
+    networks:
+      - prod_network
+
+  pg_grafana:
+    container_name: pg_grafana
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_DB: ${GRAFANA_DB:-my_grafana_db}
+      POSTGRES_USER: ${GRAFANA_DB_USER:-my_grafana_user}
+      POSTGRES_PASSWORD: ${GRAFANA_DB_PASSWORD:-change_me}
+    ports:
+      - "${GRAFANA_DB_PORT:-5499}:5432"
+    volumes:
+      - ./services/pg_grafana:/var/lib/postgresql/data
+    networks:
+      - prod_network
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    environment:
+      GF_DATABASE_TYPE: postgres
+      GF_DATABASE_HOST: pg_grafana
+      GF_DATABASE_NAME: ${GRAFANA_DB:-my_grafana_db}
+      GF_DATABASE_USER: ${GRAFANA_DB_USER:-my_grafana_user}
+      GF_DATABASE_PASSWORD: ${GRAFANA_DB_PASSWORD:-change_me}
+      GF_DATABASE_SSL_MODE: disable
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-change_me}
+      GF_ALLOW_EMBEDDING: "true"
+      GF_PANELS_DISABLE_SANITIZE_HTML: "true"
+    depends_on:
+      - pg_grafana
+    ports:
+      - "${GRAFANA_PORT:-3111}:3000"
+    volumes:
+      - ./services/grafana:/var/lib/grafana
+    networks:
+      - prod_network
+
+networks:
+  prod_network:
+    driver: bridge
