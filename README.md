@@ -6,7 +6,6 @@ Traffic Analyzer is a computer vision pipeline for vehicle detection, tracking, 
 
 ### Tracking window
 
-Place the application screenshot here:
 
 ![Tracking window](docs/screenshots/tracking.png)
 
@@ -14,7 +13,6 @@ The tracking window shows detected vehicles, track IDs, road ROI polygons, FPS, 
 
 ### Grafana dashboard
 
-Place the Grafana screenshot here:
 
 ![Grafana dashboard](docs/screenshots/grafana.png)
 
